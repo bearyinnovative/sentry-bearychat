@@ -1,11 +1,11 @@
 """
-sentry_slack.plugin
+sentry_bearychat.plugin
 ~~~~~~~~~~~~~~~~~~~
 
 :copyright: (c) 2014 by Sentry Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
 """
-import sentry_slack
+import sentry_bearychat
 
 from django import forms
 
@@ -17,7 +17,7 @@ import urllib2
 import logging
 from cgi import escape
 
-logger = logging.getLogger('sentry.plugins.slack')
+logger = logging.getLogger('sentry.plugins.bearychat')
 
 LEVEL_TO_COLOR = {
     'debug': 'cfd3da',
@@ -28,27 +28,27 @@ LEVEL_TO_COLOR = {
 }
 
 
-class SlackOptionsForm(notify.NotificationConfigurationForm):
+class BearychatOptionsForm(notify.NotificationConfigurationForm):
     webhook = forms.CharField(
-        help_text='Your custom Slack webhook URL',
+        help_text='Your custom Bearychat webhook URL',
         widget=forms.TextInput(attrs={'class': 'span8'}))
 
 
-class SlackPlugin(notify.NotificationPlugin):
+class BearychatPlugin(notify.NotificationPlugin):
     author = 'Sentry Team'
     author_url = 'https://github.com/getsentry'
-    description = 'Post new exceptions to a Slack channel.'
+    description = 'Post new exceptions to a Bearychat channel.'
     resource_links = (
-        ('Bug Tracker', 'https://github.com/getsentry/sentry-slack/issues'),
-        ('Source', 'https://github.com/getsentry/sentry-slack'),
+        ('Bug Tracker', 'https://github.com/getsentry/sentry-bearychat/issues'),
+        ('Source', 'https://github.com/getsentry/sentry-bearychat'),
     )
 
-    title = 'Slack'
-    slug = 'slack'
-    conf_key = 'slack'
-    description = 'Send errors to Slack'
-    version = sentry_slack.VERSION
-    project_conf_form = SlackOptionsForm
+    title = 'Bearychat'
+    slug = 'bearychat'
+    conf_key = 'bearychat'
+    description = 'Send errors to Bearychat'
+    version = sentry_bearychat.VERSION
+    project_conf_form = BearychatOptionsForm
 
     def is_configured(self, project):
         return all((self.get_option(k, project) for k in ('webhook',)))
@@ -96,8 +96,8 @@ class SlackPlugin(notify.NotificationPlugin):
         try:
             return urllib2.urlopen(request).read()
         except urllib2.URLError:
-            logger.error('Could not connect to Slack.', exc_info=True)
+            logger.error('Could not connect to Bearychat.', exc_info=True)
             raise
         except urllib2.HTTPError as e:
-            logger.error('Error posting to Slack: %s', e.read(), exc_info=True)
+            logger.error('Error posting to Bearychat: %s', e.read(), exc_info=True)
             raise

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
-sentry-slack
+sentry-bearychat
 ============
 
-An extension for `Sentry <https://getsentry.com>`_ which posts notifications to `Slack <https://slack.com>`_.
+An extension for `Sentry <https://getsentry.com>`_ which posts notifications to `Bearychat <https://bearychat.com>`_.
 
 :copyright: (c) 2014 by the Sentry Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
@@ -16,12 +16,12 @@ install_requires = [
 ]
 
 setup(
-    name='sentry-slack',
+    name='sentry-bearychat',
     version='0.1.0',
     author='Matt Robenolt',
     author_email='matt@ydekproductons.com',
-    url='https://github.com/getsentry/sentry-slack',
-    description='A Sentry extension which posts notifications to Slack (https://slack.com/).',
+    url='https://github.com/getsentry/sentry-bearychat',
+    description='A Sentry extension which posts notifications to Bearychat (https://bearychat.com/).',
     long_description=open('README.rst').read(),
     license='BSD',
     package_dir={'': 'src'},
@@ -31,10 +31,10 @@ setup(
     include_package_data=True,
     entry_points={
         'sentry.apps': [
-            'slack = sentry_slack',
+            'bearychat = sentry_bearychat',
         ],
         'sentry.plugins': [
-            'slack = sentry_slack.plugin:SlackPlugin',
+            'bearychat = sentry_bearychat.plugin:BearychatPlugin',
         ]
     },
     classifiers=[
