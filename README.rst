@@ -7,7 +7,7 @@ An extension for `Sentry <https://getsentry.com>`_ which posts notifications to 
 
 Started with a fork of the Slack plugin:
 
-`https://github.com/getsentry/sentry-slack <https://github.com/getsentry/sentry-slack>`
+`https://github.com/getsentry/sentry-slack <https://github.com/getsentry/sentry-slack>`_
 
 Install
 -------
