@@ -5,6 +5,10 @@ An extension for `Sentry <https://getsentry.com>`_ which posts notifications to 
 
 .. image:: https://i.imgur.com/MFsjVmB.png
 
+Started with a fork of the Slack plugin:
+
+`https://github.com/getsentry/sentry-slack <https://github.com/getsentry/sentry-slack>`
+
 Install
 -------
 
