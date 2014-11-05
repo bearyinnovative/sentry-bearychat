@@ -2,7 +2,7 @@
 sentry_bearychat.plugin
 ~~~~~~~~~~~~~~~~~~~
 
-:copyright: (c) 2014 by Sentry Team, see AUTHORS for more details.
+:copyright: (c) 2014 by BearyInnovative Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
 """
 import sentry_bearychat
@@ -35,12 +35,12 @@ class BearychatOptionsForm(notify.NotificationConfigurationForm):
 
 
 class BearychatPlugin(notify.NotificationPlugin):
-    author = 'Sentry Team'
-    author_url = 'https://github.com/getsentry'
+    author = 'BearyInnovative Team'
+    author_url = 'https://github.com/bearyinnovative/sentry-bearychat'
     description = 'Post new exceptions to a Bearychat channel.'
     resource_links = (
-        ('Bug Tracker', 'https://github.com/getsentry/sentry-bearychat/issues'),
-        ('Source', 'https://github.com/getsentry/sentry-bearychat'),
+        ('Bug Tracker', 'https://github.com/bearyinnovative/sentry-bearychat/issues'),
+        ('Source', 'https://github.com/bearyinnovative/sentry-bearychat'),
     )
 
     title = 'Bearychat'

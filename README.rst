@@ -1,5 +1,5 @@
 sentry-bearychat
-============
+================
 
 An extension for `Sentry <https://getsentry.com>`_ which posts notifications to a `Bearychat <https://bearychat.com>`_ channel.
 
