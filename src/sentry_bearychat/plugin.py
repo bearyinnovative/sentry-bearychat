@@ -61,34 +61,39 @@ class BearychatPlugin(notify.NotificationPlugin):
         project = event.project
         team = event.team
 
-        title = '%s on <%s|%s %s>' % (
-            'New event' if group.times_seen == 1 else 'Regression',
-            group.get_absolute_url(),
-            escape(team.name.encode('utf-8')),
-            escape(project.name.encode('utf-8')),
-        )
+        team_name = team.name.encode('utf-8')
+        project_name = project.name.encode('utf-8')
 
-        message = getattr(group, 'message_short', group.message).encode('utf-8')
-        culprit = getattr(group, 'title', group.culprit).encode('utf-8')
+        title = getattr(group, 'title', group.culprit).encode('utf-8')
+        msg = getattr(group, 'message_short', group.message).encode('utf-8')
+
+        text_ptn = ("[[{team_name}/{project_name}]]({url}): {title}\n "
+                    "> {message}")
+        text = text_ptn.format(
+            team_name=escape(team_name),
+            project_name=escape(project_name),
+            url=group.get_absolute_url(),
+            title=escape(title),
+            message=escape(msg),
+        )
 
         # They can be the same if there is no culprit
         # So we set culprit to an empty string instead of duplicating the text
-        if message == culprit:
-            culprit = ''
+        if msg == title:
+            title = ''
 
         payload = {
-            'parse': 'none',
-            'text': title,
-            'attachments': {
+            'text': text,
+            'attachments': [{
                 'color': self.color_for_group(group),
-                'fields': {
-                    'group_url': group.get_absolute_url(),
-                    'team': team.name.encode('utf-8'),
-                    'project': project.name.encode('utf-8'),
-                    'title': culprit,
-                    'message': message,
-                }
-            }
+                'fields': [{
+                    'url': group.get_absolute_url(),
+                    'team': team_name,
+                    'project': project_name,
+                    'title': title,
+                    'message': msg,
+                }]
+            }]
         }
 
         values = {'payload': json.dumps(payload)}
