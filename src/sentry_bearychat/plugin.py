@@ -79,14 +79,16 @@ class BearychatPlugin(notify.NotificationPlugin):
         payload = {
             'parse': 'none',
             'text': title,
-            'attachments': [{
+            'attachments': {
                 'color': self.color_for_group(group),
-                'fields': [{
-                    'title': escape(message),
-                    'value': escape(culprit),
-                    'short': False,
-                }]
-            }]
+                'fields': {
+                    'group_url': group.get_absolute_url(),
+                    'team': team.name.encode('utf-8'),
+                    'project': project.name.encode('utf-8'),
+                    'title': culprit,
+                    'message': message,
+                }
+            }
         }
 
         values = {'payload': json.dumps(payload)}
