@@ -2,7 +2,7 @@
 sentry_bearychat.plugin
 ~~~~~~~~~~~~~~~~~~~
 
-:copyright: (c) 2014 by Sentry Team, see AUTHORS for more details.
+:copyright: (c) 2014 by BearyInnovative Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
 """
 import sentry_bearychat
@@ -14,6 +14,7 @@ from sentry.utils import json
 
 import urllib
 import urllib2
+from urlparse import urljoin
 import logging
 from cgi import escape
 
@@ -35,18 +36,18 @@ class BearychatOptionsForm(notify.NotificationConfigurationForm):
 
 
 class BearychatPlugin(notify.NotificationPlugin):
-    author = 'Sentry Team'
-    author_url = 'https://github.com/getsentry'
-    description = 'Post new exceptions to a Bearychat channel.'
+    _repo_base = 'https://github.com/bearyinnovative/sentry-bearychat/'
+    author = 'BearyInnovative Team'
+    author_url = 'https://github.com/bearyinnovative/sentry-bearychat'
     resource_links = (
-        ('Bug Tracker', 'https://github.com/getsentry/sentry-bearychat/issues'),
-        ('Source', 'https://github.com/getsentry/sentry-bearychat'),
+        ('Source', _repo_base),
+        ('Bug Tracker', urljoin(_repo_base, 'issues')),
     )
 
     title = 'Bearychat'
     slug = 'bearychat'
+    description = 'Post new exceptions to a Bearychat channel.'
     conf_key = 'bearychat'
-    description = 'Send errors to Bearychat'
     version = sentry_bearychat.VERSION
     project_conf_form = BearychatOptionsForm
 
@@ -61,30 +62,37 @@ class BearychatPlugin(notify.NotificationPlugin):
         project = event.project
         team = event.team
 
-        title = '%s on <%s|%s %s>' % (
-            'New event' if group.times_seen == 1 else 'Regression',
-            group.get_absolute_url(),
-            escape(team.name.encode('utf-8')),
-            escape(project.name.encode('utf-8')),
-        )
+        team_name = team.name.encode('utf-8')
+        project_name = project.name.encode('utf-8')
 
-        message = getattr(group, 'message_short', group.message).encode('utf-8')
-        culprit = getattr(group, 'title', group.culprit).encode('utf-8')
+        title = getattr(group, 'title', group.culprit).encode('utf-8')
+        msg = getattr(group, 'message_short', group.message).encode('utf-8')
+
+        text_ptn = ("[[{team_name}/{project_name}]]({url}): {title}\n "
+                    "> {message}")
+        text = text_ptn.format(
+            team_name=escape(team_name),
+            project_name=escape(project_name),
+            url=group.get_absolute_url(),
+            title=escape(title),
+            message=escape(msg),
+        )
 
         # They can be the same if there is no culprit
         # So we set culprit to an empty string instead of duplicating the text
-        if message == culprit:
-            culprit = ''
+        if msg == title:
+            title = ''
 
         payload = {
-            'parse': 'none',
-            'text': title,
+            'text': text,
             'attachments': [{
                 'color': self.color_for_group(group),
                 'fields': [{
-                    'title': escape(message),
-                    'value': escape(culprit),
-                    'short': False,
+                    'url': group.get_absolute_url(),
+                    'team': team_name,
+                    'project': project_name,
+                    'title': title,
+                    'message': msg,
                 }]
             }]
         }
@@ -99,5 +107,6 @@ class BearychatPlugin(notify.NotificationPlugin):
             logger.error('Could not connect to Bearychat.', exc_info=True)
             raise
         except urllib2.HTTPError as e:
-            logger.error('Error posting to Bearychat: %s', e.read(), exc_info=True)
+            logger.error('Error posting to Bearychat: %s',
+                         e.read(), exc_info=True)
             raise
