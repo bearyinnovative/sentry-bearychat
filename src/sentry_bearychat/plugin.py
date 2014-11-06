@@ -14,6 +14,7 @@ from sentry.utils import json
 
 import urllib
 import urllib2
+from urlparse import urljoin
 import logging
 from cgi import escape
 
@@ -35,18 +36,18 @@ class BearychatOptionsForm(notify.NotificationConfigurationForm):
 
 
 class BearychatPlugin(notify.NotificationPlugin):
+    _repo_base = 'https://github.com/bearyinnovative/sentry-bearychat/'
     author = 'BearyInnovative Team'
     author_url = 'https://github.com/bearyinnovative/sentry-bearychat'
-    description = 'Post new exceptions to a Bearychat channel.'
     resource_links = (
-        ('Bug Tracker', 'https://github.com/bearyinnovative/sentry-bearychat/issues'),
-        ('Source', 'https://github.com/bearyinnovative/sentry-bearychat'),
+        ('Source', _repo_base),
+        ('Bug Tracker', urljoin(_repo_base, 'issues')),
     )
 
     title = 'Bearychat'
     slug = 'bearychat'
+    description = 'Post new exceptions to a Bearychat channel.'
     conf_key = 'bearychat'
-    description = 'Send errors to Bearychat'
     version = sentry_bearychat.VERSION
     project_conf_form = BearychatOptionsForm
 
@@ -106,5 +107,6 @@ class BearychatPlugin(notify.NotificationPlugin):
             logger.error('Could not connect to Bearychat.', exc_info=True)
             raise
         except urllib2.HTTPError as e:
-            logger.error('Error posting to Bearychat: %s', e.read(), exc_info=True)
+            logger.error('Error posting to Bearychat: %s',
+                         e.read(), exc_info=True)
             raise
