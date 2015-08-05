@@ -29,13 +29,13 @@ LEVEL_TO_COLOR = {
 }
 
 
-class BearychatOptionsForm(notify.NotificationConfigurationForm):
+class BearyChatOptionsForm(notify.NotificationConfigurationForm):
     webhook = forms.CharField(
-        help_text='Your custom Bearychat webhook URL',
+        help_text='Your custom BearyChat webhook URL',
         widget=forms.TextInput(attrs={'class': 'span8'}))
 
 
-class BearychatPlugin(notify.NotificationPlugin):
+class BearyChatPlugin(notify.NotificationPlugin):
     _repo_base = 'https://github.com/bearyinnovative/sentry-bearychat/'
     author = 'BearyInnovative Team'
     author_url = 'https://github.com/bearyinnovative/sentry-bearychat'
@@ -44,12 +44,12 @@ class BearychatPlugin(notify.NotificationPlugin):
         ('Bug Tracker', urljoin(_repo_base, 'issues')),
     )
 
-    title = 'Bearychat'
+    title = 'BearyChat'
     slug = 'bearychat'
-    description = 'Post new exceptions to a Bearychat channel.'
+    description = 'Post new exceptions to a BearyChat channel.'
     conf_key = 'bearychat'
     version = sentry_bearychat.VERSION
-    project_conf_form = BearychatOptionsForm
+    project_conf_form = BearyChatOptionsForm
 
     def is_configured(self, project):
         return all((self.get_option(k, project) for k in ('webhook',)))
@@ -104,9 +104,9 @@ class BearychatPlugin(notify.NotificationPlugin):
         try:
             return urllib2.urlopen(request).read()
         except urllib2.URLError:
-            logger.error('Could not connect to Bearychat.', exc_info=True)
+            logger.error('Could not connect to BearyChat.', exc_info=True)
             raise
         except urllib2.HTTPError as e:
-            logger.error('Error posting to Bearychat: %s',
+            logger.error('Error posting to BearyChat: %s',
                          e.read(), exc_info=True)
             raise
