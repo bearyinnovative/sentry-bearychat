@@ -2,32 +2,18 @@
 sentry_bearychat.plugin
 ~~~~~~~~~~~~~~~~~~~
 
-:copyright: (c) 2014 by BearyInnovative Team, see AUTHORS for more details.
+:copyright: (c) 2015 by BearyInnovative Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
 """
 import sentry_bearychat
 
 from django import forms
 
-from sentry.plugins.bases import notify
-from sentry.utils import json
-
-import urllib
-import urllib2
-from urlparse import urljoin
 import logging
-from cgi import escape
 
-logger = logging.getLogger('sentry.plugins.bearychat')
-
-LEVEL_TO_COLOR = {
-    'debug': 'cfd3da',
-    'info': '2788ce',
-    'warning': 'f18500',
-    'error': 'f43f20',
-    'fatal': 'd20f2a',
-}
-
+from sentry.plugins.bases import notify
+from sentry.http import safe_urlopen
+from sentry.utils.safe import safe_execute
 
 class BearyChatOptionsForm(notify.NotificationConfigurationForm):
     webhook = forms.CharField(
@@ -36,77 +22,50 @@ class BearyChatOptionsForm(notify.NotificationConfigurationForm):
 
 
 class BearyChatPlugin(notify.NotificationPlugin):
-    _repo_base = 'https://github.com/bearyinnovative/sentry-bearychat/'
     author = 'BearyInnovative Team'
-    author_url = 'https://github.com/bearyinnovative/sentry-bearychat'
-    resource_links = (
-        ('Source', _repo_base),
-        ('Bug Tracker', urljoin(_repo_base, 'issues')),
-    )
-
+    author_url = 'https://github.com/bearyinnovative'
+    resource_links = [
+        ('Bug Tracker', 'https://github.com/bearyinnovative/sentry-bearychat/issues'),
+        ('Source', 'https://github.com/bearyinnovative/sentry-bearychat'),
+    ]
+    version = sentry_bearychat.VERSION
     title = 'BearyChat'
     slug = 'bearychat'
-    description = 'Post new exceptions to a BearyChat channel.'
+    description = "Post notifications to a BeayChat channel."
+    conf_title = title
     conf_key = 'bearychat'
-    version = sentry_bearychat.VERSION
     project_conf_form = BearyChatOptionsForm
+    logger = logging.getLogger('sentry.plugins.bearychat')
 
     def is_configured(self, project):
-        return all((self.get_option(k, project) for k in ('webhook',)))
+        return bool(self.get_option('webhook', project))
 
-    def color_for_group(self, group):
-        return '#' + LEVEL_TO_COLOR.get(group.get_level_display(), 'error')
+    # use same data structure as Webhook plugin
+    def get_group_data(self, group, event):
+        data = {
+            'id': str(group.id),
+            'project': group.project.slug,
+            'project_name': group.project.name,
+            'logger': group.logger,
+            'level': group.get_level_display(),
+            'culprit': group.culprit,
+            'message': event.message,
+            'url': group.get_absolute_url(),
+        }
+        data['event'] = dict(event.data or {})
+        data['event']['tags'] = event.get_tags()
+        return data
 
-    def notify_users(self, group, event, fail_silently=False):
-        webhook = self.get_option('webhook', event.project)
-        project = event.project
-        team = event.team
-
-        team_name = team.name.encode('utf-8')
-        project_name = project.name.encode('utf-8')
-
-        title = getattr(group, 'title', group.culprit).encode('utf-8')
-        msg = getattr(group, 'message_short', group.message).encode('utf-8')
-
-        text_ptn = ("[[{team_name}/{project_name}]]({url}): {title}\n "
-                    "> {message}")
-        text = text_ptn.format(
-            team_name=escape(team_name),
-            project_name=escape(project_name),
-            url=group.get_absolute_url(),
-            title=escape(title),
-            message=escape(msg),
+    def send_webhook(self, url, payload):
+        return safe_urlopen(
+            url=url,
+            json=payload,
+            timeout=3,
+            verify_ssl=False,
         )
 
-        # They can be the same if there is no culprit
-        # So we set culprit to an empty string instead of duplicating the text
-        if msg == title:
-            title = ''
-
-        payload = {
-            'text': text,
-            'attachments': [{
-                'color': self.color_for_group(group),
-                'fields': [{
-                    'url': group.get_absolute_url(),
-                    'team': team_name,
-                    'project': project_name,
-                    'title': title,
-                    'message': msg,
-                }]
-            }]
-        }
-
-        values = {'payload': json.dumps(payload)}
-
-        data = urllib.urlencode(values)
-        request = urllib2.Request(webhook, data)
-        try:
-            return urllib2.urlopen(request).read()
-        except urllib2.URLError:
-            logger.error('Could not connect to BearyChat.', exc_info=True)
-            raise
-        except urllib2.HTTPError as e:
-            logger.error('Error posting to BearyChat: %s',
-                         e.read(), exc_info=True)
-            raise
+    def notify_users(self, group, event, fail_silently=False):
+        if not self.is_configured(project):
+            return
+        payload = self.get_group_data(group, event)
+        safe_execute(self.send_webhook, webhook, payload)

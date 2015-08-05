@@ -22,6 +22,7 @@ setup(
     author_email='info@bearyinnovative.com',
     url='https://github.com/bearyinnovative/sentry-bearychat',
     description='A Sentry extension which posts notifications to BearyChat (https://bearychat.com/).',
+    keywords='bearychat sentry',
     long_description=open('README.rst').read(),
     license='BSD',
     package_dir={'': 'src'},
