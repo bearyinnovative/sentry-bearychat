@@ -1,13 +1,9 @@
 sentry-bearychat
 ================
 
-An extension for `Sentry <https://getsentry.com>`_ which posts notifications to a `Bearychat <https://bearychat.com>`_ channel.
+An extension for `Sentry <https://getsentry.com>`_ which posts notifications to a `BearyChat <https://bearychat.com>`_ channel.
 
 .. image:: https://cloud.githubusercontent.com/assets/2056489/4951031/44416b9c-6662-11e4-825d-b179b614828a.png
-
-Started with a fork of the Slack plugin:
-
-`https://github.com/getsentry/sentry-slack <https://github.com/getsentry/sentry-slack>`_
 
 QuickStart
 ----------
@@ -18,15 +14,15 @@ QuickStart
 
 2. Restart your sentry service
 
-3. Login your sentry website, and enter _Manage Integrations_ page of your project.
+3. Login your sentry website, and enter `Manage Integrations`_ page of your project.
 
 .. image:: https://cloud.githubusercontent.com/assets/2056489/4988175/bb5e5ef8-6999-11e4-9cef-2f6326a02ef2.png
 
-4. Tick the checkbox of _Bearychat_.
+4. Tick the checkbox of `BearyChat`_.
 
 .. image:: https://cloud.githubusercontent.com/assets/2056489/4988184/d775e07a-6999-11e4-853a-72997ccbca6d.png
 
-5. Paste the webhook link form `bearychat` in Webhook field.
+5. Paste the webhook link form `bearychat`_ in Webhook field.
 
 .. image:: https://cloud.githubusercontent.com/assets/2056489/4988990/452d51e6-69ab-11e4-87f6-7cb3813ad309.png
 
