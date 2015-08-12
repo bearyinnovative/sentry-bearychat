@@ -37,9 +37,6 @@ class BearyChatPlugin(notify.NotificationPlugin):
     project_conf_form = BearyChatOptionsForm
     logger = logging.getLogger('sentry.plugins.bearychat')
 
-    def is_configured(self, project):
-        return bool(self.get_option('webhook', project))
-
     # use same data structure as Webhook plugin
     def get_group_data(self, group, event):
         data = {
@@ -65,7 +62,5 @@ class BearyChatPlugin(notify.NotificationPlugin):
         )
 
     def notify_users(self, group, event, fail_silently=False):
-        if not self.is_configured(project):
-            return
         payload = self.get_group_data(group, event)
         safe_execute(self.send_webhook, webhook, payload)
