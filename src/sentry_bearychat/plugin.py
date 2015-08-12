@@ -56,6 +56,9 @@ class BearyChatPlugin(notify.NotificationPlugin):
         data['event']['tags'] = event.get_tags()
         return data
 
+    def get_webhook_url(self, project):
+        return self.get_option('webhook', project)
+
     def send_webhook(self, url, payload):
         return safe_urlopen(
             url=url,
@@ -65,7 +68,11 @@ class BearyChatPlugin(notify.NotificationPlugin):
         )
 
     def notify_users(self, group, event, fail_silently=False):
-        if not self.is_configured(group.project):
+        project = group.project
+
+        if not self.is_configured(project):
             return
+
+        url = self.get_webhook_url(project)
         payload = self.get_group_data(group, event)
-        safe_execute(self.send_webhook, webhook, payload)
+        safe_execute(self.send_webhook, url, payload)

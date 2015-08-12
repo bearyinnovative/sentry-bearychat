@@ -17,7 +17,7 @@ install_requires = [
 
 setup(
     name='sentry-bearychat',
-    version='0.2.2',
+    version='0.2.3',
     author='BearyInnovative',
     author_email='info@bearyinnovative.com',
     url='https://github.com/bearyinnovative/sentry-bearychat',
