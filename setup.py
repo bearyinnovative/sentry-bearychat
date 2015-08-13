@@ -3,9 +3,9 @@
 sentry-bearychat
 ================
 
-An extension for `Sentry <https://getsentry.com>`_ which posts notifications to `Bearychat <https://bearychat.com>`_.
+An extension for `Sentry <https://getsentry.com>`_ which posts notifications to `BearyChat <https://bearychat.com>`_.
 
-:copyright: (c) 2014 by the BearyInnovative Team, see AUTHORS for more details.
+:copyright: (c) 2015 by the BearyInnovative Team, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
 """
 from setuptools import setup, find_packages
@@ -17,11 +17,12 @@ install_requires = [
 
 setup(
     name='sentry-bearychat',
-    version='0.1.0',
+    version='0.2.3',
     author='BearyInnovative',
     author_email='info@bearyinnovative.com',
     url='https://github.com/bearyinnovative/sentry-bearychat',
-    description='A Sentry extension which posts notifications to Bearychat (https://bearychat.com/).',
+    description='A Sentry extension which posts notifications to BearyChat (https://bearychat.com/).',
+    keywords='bearychat sentry',
     long_description=open('README.rst').read(),
     license='BSD',
     package_dir={'': 'src'},
@@ -34,7 +35,7 @@ setup(
             'bearychat = sentry_bearychat',
         ],
         'sentry.plugins': [
-            'bearychat = sentry_bearychat.plugin:BearychatPlugin',
+            'bearychat = sentry_bearychat.plugin:BearyChatPlugin',
         ]
     },
     classifiers=[
